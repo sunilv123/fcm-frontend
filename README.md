@@ -1,27 +1,42 @@
-# FcmExample
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.0.
+First install two packages:
 
-## Development server
+firebase
+angularfire2
+npm install firebase angularfire2 --save
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Now create a manifest.json file in the src/ directory. Add the following lines to it.
 
-## Code scaffolding
+{ 
+"fcm_sender_id": "103953800507"
+}
+The value of fcm_sender_id not required to change. It will be same.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Then link it in the head of index.html
 
-## Build
+<link rel="manifest" href="/manifest.json">
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Create another file in the src/ directory named firebase-messaging-sw.js. The worker just hangs out in the background with the messaging config waiting to notify a user.
 
-## Running unit tests
+In this file just replace 'messagingSenderId': 'YOUR-SENDER-ID' with the sender id generated while creating your fcm project.
+like:
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+firebase-messaging-sw.js
 
-## Running end-to-end tests
+importScripts("https://www.gstatic.com/firebasejs/3.9.0/firebase-app.js");
+importScripts("https://www.gstatic.com/firebasejs/3.9.0/firebase-messaging.js");
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+firebase.initializeApp({
+  messagingSenderId: "735019930663"
+});
 
-## Further help
+const messaging = firebase.messaging();
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+Add finally add them inside apps in angular.json.
+
+Copy the functions from messaging.service.ts. And finally use them in ngOninit in app.component.ts.
+
+this.msgService.getPermission(); this.msgService.receiveMessage(); this.message = this.msgService.currentMessage;
+
+Open the browser you will get popup asking permission say yes then browser will generate the unique token.
+
